@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Login Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --card: #111827;
+      --card-border: #1f2d45;
+      --accent: #38bdf8;
+      --accent2: #818cf8;
+      --danger: #f87171;
+      --success: #34d399;
+      --text: #f1f5f9;
+      --muted: #64748b;
+      --input-bg: #0d1525;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      animation: drift 10s ease-in-out infinite alternate;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb1 { width: 400px; height: 400px; background: #38bdf8; top: -100px; left: -100px; animation-delay: 0s; }
+    .orb2 { width: 350px; height: 350px; background: #818cf8; bottom: -80px; right: -80px; animation-delay: -5s; }
+    .orb3 { width: 250px; height: 250px; background: #34d399; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -3s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 20px) scale(1.08); }
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      animation: fadeUp 0.7s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56,189,248,0.1);
+      border: 1px solid rgba(56,189,248,0.25);
+      color: var(--accent);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 18px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.4; transform:scale(0.7); }
+    }
+
+    h1.portal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+    h1.portal-title span {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.5;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 13px 14px 13px 40px;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56,189,248,0.12);
+    }
+
+    input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .toggle-pass {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      width: auto;
+      transition: color 0.2s;
+    }
+    .toggle-pass:hover { color: var(--accent); }
+
+    #loginBtn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #0b0f1a;
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(56,189,248,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #loginBtn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    }
+
+    #loginBtn:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(56,189,248,0.4);
+    }
+
+    #loginBtn:active:not(:disabled) { transform: translateY(0); }
+
+    #loginBtn:disabled {
+      background: #1f2d45;
+      color: var(--muted);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    #message {
+      margin-top: 18px;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 12px 14px;
+      border-radius: 9px;
+      display: none;
+      animation: msgIn 0.3s ease;
+    }
+
+    @keyframes msgIn {
+      from { opacity:0; transform:scale(0.97); }
+      to   { opacity:1; transform:scale(1); }
+    }
+
+    #message.success {
+      display: block;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.3);
+      color: var(--success);
+    }
+
+    #message.error {
+      display: block;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: var(--danger);
+    }
+
+    #message.locked {
+      display: block;
+      background: rgba(248,113,113,0.15);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .attempts-row {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      justify-content: center;
+    }
+
+    .attempt-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--card-border);
+      transition: background 0.3s;
+    }
+
+    .attempt-dot.used {
+      background: var(--danger);
+      box-shadow: 0 0 6px rgba(248,113,113,0.5);
+    }
+
+    .attempts-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--card-border);
+      margin: 20px 0;
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .hint strong { color: rgba(56,189,248,0.7); font-weight: 500; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+
+  <div class="wrapper">
+    <div class="badge"><span class="badge-dot"></span> WVSU · CIT 238</div>
+    <h1 class="portal-title">Student<br><span>Login Portal</span></h1>
+    <p class="subtitle">Enter your credentials to access the system.</p>
+
+    <div class="card">
+      <div class="field">
+        <label>Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="username" placeholder="Enter username" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔑</span>
+          <input type="password" id="password" placeholder="Enter password" autocomplete="off">
+          <button class="toggle-pass" onclick="togglePassword()" id="toggleBtn" title="Show/hide password">👁</button>
+        </div>
+      </div>
+
+      <button id="loginBtn" onclick="login()">Sign In →</button>
+
+      <div class="attempts-row" id="attemptsRow">
+        <div class="attempt-dot" id="dot1"></div>
+        <div class="attempt-dot" id="dot2"></div>
+        <div class="attempt-dot" id="dot3"></div>
+        <span class="attempts-label" id="attemptsLabel"></span>
+      </div>
+
+      <p id="message"></p>
+
+      <hr class="divider">
+      <p class="hint">Use <strong>admin / 1234</strong> &nbsp;·&nbsp; <strong>student1 / 1111</strong> &nbsp;·&nbsp; <strong>student2 / 2222</strong></p>
+    </div>
+  </div>
+
+  <script>
+    var attempts = 0;
+    var maxAttempts = 3;
+    var locked = false;
+
+    // TASK 2: 3 users | TASK 1: change first entry to your name & birth year
+    var users = [
+      { username: "admin",    password: "1234" },
+      { username: "student1", password: "1111" },
+      { username: "student2", password: "2222" }
+    ];
+
+    function togglePassword() {
+      var p = document.getElementById("password");
+      p.type = p.type === "password" ? "text" : "password";
+    }
+
+    function updateDots() {
+      document.getElementById("attemptsRow").style.display = "flex";
+      var dots = ["dot1","dot2","dot3"];
+      for (var i = 0; i < dots.length; i++) {
+        document.getElementById(dots[i]).classList.toggle("used", i < attempts);
+      }
+      var remaining = maxAttempts - attempts;
+      document.getElementById("attemptsLabel").textContent =
+        remaining > 0 ? remaining + " attempt" + (remaining !== 1 ? "s" : "") + " remaining" : "";
+    }
+
+    function showMessage(text, type) {
+      var el = document.getElementById("message");
+      el.className = type;
+      el.innerHTML = text;
+      el.style.animation = "none";
+      el.offsetHeight;
+      el.style.animation = "msgIn 0.3s ease";
+    }
+
+    function login() {
+      if (locked) return;
+
+      var user = document.getElementById("username").value.trim();
+      var pass = document.getElementById("password").value.trim();
+
+      // Check all users
+      var validUser = null;
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].username === user && users[i].password === pass) {
+          validUser = users[i]; break;
+        }
+      }
+
+      if (validUser !== null) {
+        // TASK 5: Welcome message
+        showMessage("✅ Welcome, <strong>" + user + "</strong>! Login successful.", "success");
+        document.getElementById("attemptsRow").style.display = "none";
+        document.getElementById("username").disabled = true;
+        document.getElementById("password").disabled = true;
+        document.getElementById("loginBtn").disabled = true;
+        document.getElementById("toggleBtn").disabled = true;
+      } else {
+        attempts++;
+        updateDots(); // TASK 3: attempts tracking
+
+        if (attempts >= maxAttempts) {
+          locked = true;
+          showMessage("🔒 Account Locked! Too many failed attempts.", "locked");
+          document.getElementById("username").disabled = true;
+          document.getElementById("password").disabled = true;
+          document.getElementById("loginBtn").disabled = true;
+          document.getElementById("toggleBtn").disabled = true;
+        } else {
+          showMessage("❌ Invalid username or password. Please try again.", "error");
+          var card = document.querySelector(".card");
+          card.style.animation = "none";
+          card.offsetHeight;
+          card.style.animation = "shake 0.4s ease";
+        }
+      }
+    }
+
+    // Enter key support
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") login();
+    });
+  </script>
+</body>
+</html>
